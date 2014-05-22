@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% block contents %}
+    <form action="" method="POST">{% csrf_token %}
+
+    {% for field in signup_form %}
+        {{ field.errors }}
+        <div style="overflow: hidden">
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+<!--
+    <div class="input-group">
+        <span class="input-group-addon">логин</span>
+        <input type="text" class="form-control" name="username">
+    </div>
+-->
+    <button type="submit" class="btn btn-default">зарегистрироваться</button>
+
+    </form>
+{% endblock %}

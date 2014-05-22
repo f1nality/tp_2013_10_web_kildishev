@@ -1,0 +1,50 @@
+{% extends "base_generic.html" %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        function question_like(id, value) {
+            var jqxhr = $.ajax("/ajax/question_like/" + id + "/" + value)
+            .done(function(response) {
+                alert ( "success" );
+            })
+            .fail(function() {
+                alert( "error" );
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block contents %}
+    <div class="question-row">
+        <span class="question-title">{{ question.title }}</span><br>
+        {{ question.contents }}<br>
+        <a href="javascript://" onclick="question_like({{ question.id }}, 1)">Like</a> | <a href="javascript://" onclick="question_like({{ question.id }}, 0)">Dislike</a><br>
+    </div>
+
+    {% for answer in answers %}
+        <div style="float: left; margin-right: 10px">
+            {%  if answer.is_right %}
+                <img src="/images/tick.png">
+            {% else %}
+                <a href="javascript://"><img src="/images/tick_inactive.png"></a>
+            {% endif %}
+        </div>
+        <div class="answer-row" style="overflow: hidden">
+            {{ answer.contents }}<br>
+            <a href="/user/{{ answer.author.id }}">{{ answer.author.username }}</a>
+        </div>
+    {% endfor %}
+
+    <div>Добавление ответа:</div>
+    <form action="" method="POST">{% csrf_token %}
+
+    {% for field in answer_form %}
+        {{ field.errors }}
+        <div style="overflow: hidden">
+            {{ field }}
+        </div>
+    {% endfor %}
+
+    <input type="submit" value="Отправить">
+    </form>
+{% endblock %}

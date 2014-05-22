@@ -1,0 +1,54 @@
+{% extends "base_generic.html" %}
+
+{% block javascript %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        function question_like(id, value) {
+            var jqxhr = $.ajax("/ajax/question_like/" + id + "/" + value)
+            .done(function(response) {
+                var json = JSON.parse(response);
+
+                $("#question-" + id).text(json.rating);
+                $("#question_like_" + id).hide();
+            })
+            .fail(function() {
+                alert( "error" );
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block contents %}
+    {% for question in questions %}
+        <div class="question-row">
+            <div class="row-fluid">
+                <div class="span1" style="text-align: center">
+                    <h3><span id="question-{{ question.id }}" style="color: {% if question.rating > 0 %}green{% elif question.rating < 0 %}darkred{% else %}grey{% endif %}">{{ question.rating }}</span></h3>
+                </div>
+                <div class="span11">
+                    <span class="question-title">{{ question.title }}</span><br>
+                    {{ question.contents }}<br>
+                    <a href="/question/{{ question.id }}">Read answers ({{ question.answers_num }})</a>
+                    | <a href="/question/{{ question.id }}">Answer</a>
+                    {% if user.is_authenticated and question.liked == 0 %}<span id="question_like_{{ question.id }}"> | <a href="javascript://" onclick="question_like({{ question.id }}, 1)">Like</a> | <a href="javascript://" onclick="question_like({{ question.id }}, 0)">Dislike</a></span>{% endif %}
+                    <br>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="pagination">
+        {% if questions.has_previous %}
+            <a href="/{{ tab }}/{{ questions.previous_page_number }}/">Предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ questions.number }} из {{ questions.paginator.num_pages }}
+        </span>
+
+        {% if questions.has_next %}
+            <a href="/{{ tab }}/{{ questions.next_page_number }}/">Следующая</a>
+        {% endif %}
+    </div>
+{% endblock %}
